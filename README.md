@@ -1,12 +1,13 @@
-# দুর্গা সমিতি ওয়েবসাইট
+# Durga Samiti Website
 
-বাংলা responsive website. মূল UI `index.html`-এ; demo records `data.json`-এ। `config.js`-এ public Supabase configuration এবং `api.js`-এ helper functions রয়েছে।
+Static GitHub Pages website with Supabase Auth, RLS-protected shared state and Realtime updates.
 
-## চালানো
-GitHub Pages-এর root-এ `index.html`, `config.js`, `api.js`, `data.json` ও ছবি রাখুন। Supabase Publishable Key বসানোর নিয়ম `SUPABASE_SETUP_BN.md`-এ আছে।
+Start here: `SUPABASE_SETUP_BN.md`
 
-## বর্তমান অবস্থা
-এই প্রকল্পে UI এখনও LocalStorage demo flow ব্যবহার করে। Edge Function health-check কাজ করা মানে members/contributions/expenses/gallery/chat স্বয়ংক্রিয়ভাবে sync হচ্ছে না। Supabase Auth token ও RLS-backed CRUD wiring সম্পূর্ণ করতে হবে। Production login হিসেবে demo password ব্যবহার করবেন না।
+Required setup:
+1. Put the Supabase publishable/anon key in `config.js`.
+2. Run `supabase-setup.sql` in Supabase SQL Editor.
+3. Create Supabase Auth users and map them in `durga_member_accounts` as described in the Bengali guide.
+4. Deploy the folder to GitHub Pages.
 
-## নিরাপত্তা
-কোনো `service_role` বা secret key browser-এ দেবেন না। `SUPABASE_SETUP_BN.md` এবং `SECURITY.md` পড়ুন।
+Never put a Supabase service_role/secret key in frontend files.

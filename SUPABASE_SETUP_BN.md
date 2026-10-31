@@ -1,30 +1,67 @@
-# দুর্গা সমিতি — Supabase সেটআপ (বাংলা)
+# Durga Samiti Website — Supabase Database Setup (বাংলা)
 
-## এই ZIP-এ কী ঠিক করা হয়েছে
-- `index.ts`-এর GET health-check খালি JSON parse করে না; CORS OPTIONS এবং পরিষ্কার JSON error response আছে।
-- POST অনুরোধে Supabase Auth user যাচাই হয়। এই Function ইচ্ছাকৃতভাবে এখনও কোনো টেবিলে insert/update/delete করে না।
-- `config.js`-এ আপনার Project URL ও Edge Function URL বসানো আছে। Publishable Key বসাতে হবে।
-- `api.js`-এ সংযোগ পরীক্ষা এবং Auth access token-সহ REST SELECT helper আছে।
-- `package.json`-এর server script ঠিক করা হয়েছে।
+এই ZIP-এ মূল HTML/CSS ডিজাইন অপরিবর্তিত রাখা হয়েছে। এখন Supabase Auth দিয়ে Member ID + Password লগইন, একটি shared database record, RLS এবং Realtime sync যুক্ত আছে।
 
-## গুরুত্বপূর্ণ সীমাবদ্ধতা
-বর্তমান `index.html` এখনও নিজস্ব demo/localStorage login এবং data structure ব্যবহার করে। এই ZIP-এ সদস্য, চাঁদা, খরচ, চ্যাট ও গ্যালারির সম্পূর্ণ Supabase sync দাবি করা হচ্ছে না। Supabase Auth-এ প্রতিটি সদস্যের লগইন অ্যাকাউন্ট এবং `members.id`-এর Auth UUID মিলিয়ে তারপর UI-কে API-তে যুক্ত করতে হবে। শুধু Edge Function health-check সফল হওয়া database sync-এর প্রমাণ নয়।
+## ১) Supabase Project Key বসাও
+1. Supabase Dashboard খুলে তোমার Project নির্বাচন করো।
+2. Project Settings → API (বা API Keys) → Publishable key কপি করো। পুরোনো Project হলে `anon public` key ব্যবহার করা যায়।
+3. ZIP-এর `config.js` ফাইল খুলে `PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE`-এর জায়গায় ওই key বসাও।
+4. URL আগে থেকেই এই Project-এর URL হিসেবে রাখা হয়েছে। তোমার Project আলাদা হলে URL-টিও বদলাবে।
+5. `service_role` বা Secret key কখনো `config.js`, HTML, GitHub বা ZIP-এ বসাবে না।
 
-## Publishable Key বসানো
-1. Supabase Dashboard → Project Settings → API Keys খুলুন।
-2. শুধু Publishable key (`sb_publishable_...`) বা পুরনো `anon` public key কপি করুন।
-3. `config.js`-এর `PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE` বদলান।
-4. কখনও `service_role`, `sb_secret_...` বা অন্য secret key browser code/GitHub-এ দেবেন না।
-5. `config.js`-এর তথ্য public repository-তে থাকলে key-টিকে public key হিসেবেই ধরুন এবং RLS ঠিক রাখুন।
+## ২) Database SQL চালাও
+1. Supabase → SQL Editor → New query খোলো।
+2. `supabase-setup.sql` (অথবা একই কোড থাকা `seed.sql`) পুরোটা কপি করে Run করো।
+3. এখানে RLS চালু থাকবে। **RLS বন্ধ করবে না।**
 
-## Edge Function deploy
-Supabase Dashboard → Edge Functions → `durga-samiti-api` → Code-এ `index.ts`-এর কোড বসিয়ে Deploy updates করুন। GET health-check লগইন ছাড়াই কেবল function চলার অবস্থা জানায়। POST-এ valid Supabase Auth access token লাগবে।
+## ৩) প্রথম Admin account তৈরি করো
+এই অ্যাপের Login-এ Member ID + Password থাকবে। Supabase Auth-এ প্রতিটি সদস্যের আলাদা user account তৈরি করতে হবে।
 
-## GitHub Pages
-`index.html`, `config.js`, `api.js`, `data.json`, ছবি ও অন্যান্য assets একই root folder-এ রাখুন। মনে রাখবেন: `index.html`-এ `api.js` helper যোগ করলেই স্বয়ংক্রিয় sync চালু হয় না; UI-র প্রতিটি data action-কে helper/secure backend-এ সংযুক্ত করতে হবে।
+1. Authentication → Providers → Email খুলে Email provider Enabled রাখো।
+2. Email confirmations বন্ধ করো (কারণ এই প্রকল্পে synthetic login email ব্যবহৃত হচ্ছে; আসল ইমেল পাঠানো হয় না)।
+3. Authentication → Users → Add user → Create new user।
+4. Admin-এর জন্য Email হবে: `member-ZHVyQDkwMA@durga-samiti.invalid`
+   - এটি `DUR@900` Member ID-এর জন্য।
+   - Password হিসেবে Admin-এর জন্য নতুন শক্তিশালী password দাও।
+5. তৈরি হওয়া User-এর UUID কপি করো।
+6. SQL Editor-এ চালাও (UUID-টি বদলে):
+   ```sql
+   insert into public.durga_member_accounts(auth_user_id, member_id, is_admin)
+   values ('PASTE-ADMIN-AUTH-UUID', 'DUR@900', true);
+   ```
+7. GitHub Pages-এ সাইট খোলো। নাম `আকাশ কর্মকার`, Member ID `DUR@900`, এবং Supabase Auth-এ সেট করা Password দিয়ে লগইন করো।
+8. প্রথমবার shared database খালি থাকলে Admin-এর ব্রাউজারে থাকা starter data database-এ আপলোড হবে।
 
-## নিরাপত্তা
-- LocalStorage-এ রাখা demo password production login নয়।
-- সব টেবিলে RLS চালু রাখুন এবং নীতিগুলো পরীক্ষা করুন।
-- `members`-এ ফোন/ব্যক্তিগত তথ্য থাকলে সব authenticated user-কে সব column দেখানোর আগে privacy বিবেচনা করুন।
-- production ব্যবহারের আগে Auth, member ID mapping, role changes, writes, Storage upload এবং audit logging আলাদা করে পরীক্ষা করুন।
+## ৪) অন্য Member account তৈরি করো
+প্রত্যেক সদস্যের জন্য:
+1. Authentication → Users → Add user-এ একটি user তৈরি করো।
+2. Email alias তৈরি করার নিয়ম: Member ID ছোট হাতের অক্ষরে UTF-8 Base64URL encode করে `member-` আগে এবং `@durga-samiti.invalid` পরে বসাও।
+   - উদাহরণ `DUR002` → `member-ZHVyMDAy@durga-samiti.invalid`
+   - উদাহরণ `DUR003` → `member-ZHVyMDAz@durga-samiti.invalid`
+3. একটি password নির্ধারণ করো এবং User UUID কপি করো।
+4. SQL Editor-এ চালাও:
+   ```sql
+   insert into public.durga_member_accounts(auth_user_id, member_id, is_admin)
+   values ('PASTE-MEMBER-AUTH-UUID', 'DUR002', false);
+   ```
+5. সদস্য লগইন করবে তার নাম, Member ID এবং ওই password দিয়ে।
+
+## ৫) GitHub Pages-এ Publish
+1. ZIP extract করো।
+2. `index.html`, `config.js`, `supabase-sync.js`, `data.json`, ছবি এবং বাকি ফাইল একই repository folder-এ রাখো।
+3. `config.js`-এ publishable/anon key বসিয়ে GitHub-এ commit ও push করো।
+4. Repository → Settings → Pages → Deploy from branch নির্বাচন করো।
+5. `index.html` যে folder-এ আছে সেই folder-টাই Pages source করো।
+
+## কীভাবে Sync হবে
+- Admin নতুন Member, আয়-ব্যয়, Notice/Photo/Gallery বা অন্য supported website data save করলে shared JSON state-এ যাবে।
+- লগইন করা সব সদস্য database থেকে একই তথ্য পড়বে।
+- Realtime subscription চালু থাকলে Admin-এর পরিবর্তন অন্য সদস্যের খোলা পেজেও আপডেট হবে।
+- Members read-only। Browser থেকে Admin সেজে database overwrite করা যাবে না; Admin write permission Supabase-এর `durga_member_accounts.is_admin` থেকে যাচাই হয়।
+- এই starter-এর chat/member-side write action আলাদা secure table-এ migrate করা হয়নি; তাই member-generated chat message বা member-side edit cloud sync নাও করতে পারে। Admin-created shared website data হলো synced scope।
+
+## নিরাপত্তা ও সীমাবদ্ধতা
+- `data.json` ও frontend source জনসাধারণের কাছে পড়া যায়; তাই সেখানে ব্যক্তিগত password রাখা যাবে না। এই সংস্করণে embedded/demo password সরানো হয়েছে। Auth password শুধু Supabase Auth-এ থাকবে।
+- Member data-তে ঠিকানা, ফোন, ছবি ইত্যাদি থাকলে মনে রেখো: shared JSON row-তে সেগুলো সব signed-in member পড়তে পারে। সংবেদনশীল তথ্যের জন্য আলাদা table ও column-level policy দরকার।
+- Supabase free plan-এর সীমা/ব্যবহার অনুযায়ী storage ও realtime quota প্রযোজ্য।
+- পুরোনো LocalStorage-এ থাকা তথ্য প্রথম Admin login-এ seed হিসেবে ব্যবহৃত হতে পারে। পুরোনো ডেটা ভুল হলে আগে Admin-এর browser-এ সঠিক data import করে তারপর প্রথমবার sync করো।
