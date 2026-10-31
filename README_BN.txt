@@ -51,3 +51,15 @@ config.js        - Supabase URL এবং anon key
 app.js           - ওয়েবসাইটের কার্যপ্রণালী
 supabase.sql     - Supabase database upgrade SQL
 README_BN.txt    - বাংলা নির্দেশিকা
+
+ছবি সরাসরি ফোন থেকে আপলোড (নতুন)
+---------------------------------
+1. Supabase Dashboard > SQL Editor > New Query খুলুন।
+2. ZIP-এর বাইরে দেওয়া Durga-Samiti-Image-Upload-SQL.sql ফাইলের কোড Paste করে RUN করুন।
+3. নতুন ZIP-এর index.html, app.js, style.css, config.js GitHub Pages-এ আপলোড করুন।
+4. Settings > Gallery-তে URL দিতে পারেন অথবা Files/Photos থেকে ছবি বেছে নিতে পারেন।
+5. Settings > Logo-তে URL দিতে পারেন অথবা ফাইল বেছে নিতে পারেন।
+6. সদস্যের প্রোফাইল ছবির URL-এর পাশের File input থেকেও ছবি আপলোড করা যাবে।
+7. ছবি সর্বোচ্চ 2 MB হতে হবে। ছবি আপলোডের পর মূল "সব পরিবর্তন সংরক্ষণ করুন" বাটন চাপুন।
+
+নিরাপত্তা নোট: durga-media public bucket-এ ছবি দেখা সবার জন্য উন্মুক্ত এবং এই সহজ browser-upload সেটআপে সরাসরি Storage API-তে upload অনুমতি দেওয়া আছে। তাই Settings পেজের বাইরে থেকেও প্রযুক্তিগতভাবে কেউ upload চেষ্টা করতে পারে।
