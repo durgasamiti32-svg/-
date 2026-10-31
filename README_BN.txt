@@ -1,23 +1,53 @@
-DURGA SAMITI WEBSITE — বাংলা সেটআপ
+DURGA SAMITI WEBSITE - নতুন সংস্করণ
+===================================
 
-এই ZIP-এ ৫টি ফাইল আছে:
-index.html = ওয়েবসাইট
-style.css = ডিজাইন
-app.js = Login, সদস্য, নোটিশ, হিসাব ও Realtime
-config.js = Supabase URL ও Publishable/anon key
-supabase.sql = Database তৈরির SQL
+নতুন সুবিধা
+-----------
+1. সদস্যের নাম + ১০ সংখ্যার Member ID দিয়ে লগইন।
+2. সদস্যের প্রোফাইল: ছবি, ফোন, ঠিকানা, জন্মতারিখ, পদ, চাঁদা ও Member ID।
+3. Members পেজে সক্রিয়/নিষ্ক্রিয় সদস্য দেখা এবং প্রোফাইল খোলা।
+4. Bills ও চাঁদা: সাল অনুযায়ী সদস্য, খরচ, অন্যান্য দায়িত্ব এবং পাড়ার চাঁদা।
+5. প্রতি বছরের হিসাব আলাদা JSON ডেটা হিসেবে থাকে; পুরোনো বছরের হিসাব অক্ষত থাকে।
+6. মোট জমা, মোট খরচ ও অবশিষ্ট ব্যালান্স।
+7. নির্বাচিত বছরের সব রেকর্ড CSV (Excel-এ খোলা যায়) ডাউনলোড।
+8. Settings থেকে Gallery-তে সরাসরি ছবির URL যোগ/ডিলিট।
+9. Settings থেকে শুধু ছবির URL দিয়ে ওয়েবসাইটের লোগো পরিবর্তন।
+10. সকল সদস্যের জন্য একটি Realtime Group Chat।
+11. Settings Password দিয়ে সব তথ্য সম্পাদনা।
 
-১) Supabase Dashboard > SQL Editor > New Query খুলুন। supabase.sql-এর সব কোড পেস্ট করে RUN করুন। Success দেখালে SQL সফল।
+সেটআপ
+-----
+A. ZIP extract করে ফোল্ডারের ফাইল GitHub Pages repository-তে আপলোড করুন।
+B. config.js ফাইল খুলুন।
+   SUPABASE_URL-এ আপনার Project URL বসান।
+   SUPABASE_ANON_KEY-এ Publishable/anon key বসান।
+   service_role key কখনো ব্যবহার করবেন না।
+C. Supabase Dashboard > SQL Editor > New Query খুলুন।
+D. এই ফোল্ডারের supabase.sql-এর সম্পূর্ণ কোড পেস্ট করে RUN করুন।
+E. GitHub Pages সাইট খুলে পরীক্ষা করুন।
 
-২) Supabase > Project Settings > API খুলুন। Project URL ও Publishable key (বা anon public key) কপি করুন। config.js-এ PASTE_PROJECT_URL_HERE এবং PASTE_PUBLISHABLE_OR_ANON_KEY_HERE-এর জায়গায় বসান। service_role/secret key কখনো বসাবেন না।
+Settings Password
+-----------------
+আগের ডাটাবেসে Settings Password আগে থেকেই থাকলে সেটি অপরিবর্তিত থাকবে।
+নতুন ডাটাবেসে প্রথমবার SQL চালালে প্রাথমিক পাসওয়ার্ড: AK@2026#£
 
-৩) ZIP Extract করে পাঁচটি ফাইল GitHub repository-র root folder-এ Upload করুন। GitHub Settings > Pages > Deploy from branch > main > /(root) > Save করুন।
+ছবি ও লোগো
+----------
+Member profile photo, Gallery photo এবং Logo-তে সরাসরি https:// image URL ব্যবহার করুন।
+URL-টি সরাসরি ছবির ফাইল খুলতে হবে। Google Drive share URL অনেক সময় সরাসরি ছবি দেখায় না।
+এই সংস্করণে Gallery-তে URL দিয়ে ছবি যোগ করা হয়; ফাইল আপলোড/Storage যুক্ত করা হয়নি।
 
-প্রথমে ১২ জনের সদস্য রেকর্ড তৈরি হবে। শেষের ৯ জনের নাম অস্থায়ী; Settings > সদস্য থেকে Edit করতে পারবেন। Settings Password: AK@2026#£
+গুরুত্বপূর্ণ নিরাপত্তা তথ্য
+-------------------------
+Member Name + ID হলো সহজ লগইন ব্যবস্থা, শক্ত পরিচয় যাচাই নয়। কারও Member ID জেনে গেলে সে ঐ সদস্যের নামে ঢোকার চেষ্টা করতে পারে।
+Settings Password যার জানা থাকবে, সে সব তথ্য পরিবর্তন করতে পারবে। পাসওয়ার্ড কাউকে অযথা দেবেন না।
+Chat-এও Member ID + নামের মিল পরীক্ষা হয়, কিন্তু এটি শক্ত authentication নয়।
 
-Settings থেকে সদস্যের নাম/ID, Notice, আয় ও ব্যয় বদলানো যায়। Save করলে Supabase-এ সেভ হবে এবং অন্য সদস্যদের পেজে Realtime update আসবে।
-
-Password বদলাতে SQL Editor-এ চালান:
-update public.durga_settings_secret set password_hash=extensions.crypt('YOUR_NEW_PASSWORD',extensions.gen_salt('bf')) where id=1;
-
-নিরাপত্তা: Member Name + ID কেবল সহজ প্রবেশ পদ্ধতি, প্রকৃত পরিচয় যাচাই নয়। যার কাছে কারও ID আছে সে তার নামে ঢোকার চেষ্টা করতে পারে। Settings Password যাদের জানা থাকবে তারা সব তথ্য পরিবর্তন করতে পারবে। এখানে কোনো Admin role নেই। এই ZIP একটি নতুন কম-ফাইলের সংস্করণ; আগের ওয়েবসাইটের অন্য ফিচার এতে অন্তর্ভুক্ত নয়।
+ফাইল
+----
+index.html       - ওয়েবসাইটের কাঠামো
+style.css        - ডিজাইন ও মোবাইল responsive style
+config.js        - Supabase URL এবং anon key
+app.js           - ওয়েবসাইটের কার্যপ্রণালী
+supabase.sql     - Supabase database upgrade SQL
+README_BN.txt    - বাংলা নির্দেশিকা
